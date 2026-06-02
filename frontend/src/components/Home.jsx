@@ -57,7 +57,7 @@ export default function Home({ onGoToLogin, onGoToRegister }) {
             <a
               key={item}
               href="#"
-              className={`text-sm font-medium transition-colors ${
+              className={`text-sm font-medium cursor-pointer transition-colors ${
                 i === 0 ? "text-white border-b border-white pb-0.5" : "text-gray-400 hover:text-white"
               }`}
               style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: "0.05em" }}
@@ -71,14 +71,14 @@ export default function Home({ onGoToLogin, onGoToRegister }) {
         <div className="hidden md:flex items-center gap-3">
           <button
             onClick={onGoToLogin}
-            className="px-5 py-2 rounded-lg text-sm font-semibold text-violet-400 border border-violet-600 hover:bg-violet-400/10 transition-colors"
+            className="px-5 py-2 rounded-lg text-sm font-semibold text-violet-400 border border-violet-600 cursor-pointer hover:bg-violet-400/10 hover:border-violet-500 transition-colors"
             style={{ fontFamily: "'Orbitron', sans-serif" }}
           >
             Connexion
           </button>
           <button
             onClick={onGoToRegister}
-            className="px-5 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-violet-600 to-pink-500 hover:opacity-90 transition-opacity"
+            className="px-5 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-violet-600 to-pink-500 cursor-pointer hover:opacity-90 hover:shadow-lg hover:shadow-violet-500/50 transition-opacity"
             style={{ fontFamily: "'Orbitron', sans-serif" }}
           >
             S&apos;inscrire
@@ -89,19 +89,19 @@ export default function Home({ onGoToLogin, onGoToRegister }) {
         <div className="flex md:hidden items-center gap-2">
           <button
             onClick={onGoToLogin}
-            className="px-3 py-1.5 rounded-lg text-xs font-semibold text-violet-400 border border-violet-600"
+            className="px-3 py-1.5 rounded-lg text-xs font-semibold text-violet-400 border border-violet-600 cursor-pointer hover:bg-violet-400/10 transition-colors"
             style={{ fontFamily: "'Orbitron', sans-serif" }}
           >
             Connexion
           </button>
           <button
             onClick={onGoToRegister}
-            className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-violet-600 to-pink-500"
+            className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-violet-600 to-pink-500 cursor-pointer hover:opacity-90 transition-opacity"
             style={{ fontFamily: "'Orbitron', sans-serif" }}
           >
             S&apos;inscrire
           </button>
-          <button onClick={() => setMenuOpen(!menuOpen)} className="ml-1 flex flex-col gap-1 p-1">
+          <button onClick={() => setMenuOpen(!menuOpen)} className="ml-1 flex flex-col gap-1 p-1 cursor-pointer">
             <span className={`block w-5 h-0.5 bg-white transition-all ${menuOpen ? "rotate-45 translate-y-1.5" : ""}`} />
             <span className={`block w-5 h-0.5 bg-white transition-all ${menuOpen ? "opacity-0" : ""}`} />
             <span className={`block w-5 h-0.5 bg-white transition-all ${menuOpen ? "-rotate-45 -translate-y-1.5" : ""}`} />
@@ -113,7 +113,7 @@ export default function Home({ onGoToLogin, onGoToRegister }) {
       {menuOpen && (
         <div className="relative z-10 flex flex-col items-center gap-4 py-4 md:hidden bg-[#0d0d1a]/95 border-b border-white/10">
           {["Catalogue", "Plateformes", "Catégories"].map((item) => (
-            <a key={item} href="#" className="text-sm font-medium text-gray-300 hover:text-white"
+            <a key={item} href="#" className="text-sm font-medium text-gray-300 cursor-pointer hover:text-white transition-colors"
               style={{ fontFamily: "'Orbitron', sans-serif" }}>
               {item}
             </a>
@@ -153,14 +153,14 @@ export default function Home({ onGoToLogin, onGoToRegister }) {
         {/* CTA */}
         <div className="flex flex-row items-center justify-center gap-3 w-full max-w-md">
           <button
-            className="flex-1 md:flex-none md:w-auto md:min-w-[220px] md:max-w-[360px] py-3 md:px-6 md:py-4 rounded-xl text-xs md:text-sm font-bold tracking-widest text-white uppercase bg-gradient-to-r from-violet-600 to-pink-500 hover:opacity-90 active:scale-95 transition-all md:whitespace-nowrap"
+            className="flex-1 md:flex-none md:w-auto md:min-w-[220px] md:max-w-[360px] py-3 md:px-6 md:py-4 rounded-xl text-xs md:text-sm font-bold tracking-widest text-white uppercase bg-gradient-to-r from-violet-600 to-pink-500 cursor-pointer hover:opacity-90 hover:shadow-lg hover:shadow-violet-500/50 active:scale-95 transition-all md:whitespace-nowrap"
             style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: "0.08em" }}
           >
             Explorer le catalogue
           </button>
           <button
             onClick={onGoToRegister}
-            className="flex-1 md:flex-none md:w-auto md:min-w-[220px] md:max-w-[360px] py-3 md:px-6 md:py-4 rounded-xl text-xs md:text-sm font-bold tracking-widest text-white uppercase border border-white/20 bg-white/5 hover:bg-white/10 active:scale-95 transition-all md:whitespace-nowrap"
+            className="flex-1 md:flex-none md:w-auto md:min-w-[220px] md:max-w-[360px] py-3 md:px-6 md:py-4 rounded-xl text-xs md:text-sm font-bold tracking-widest text-white uppercase border border-white/20 bg-white/5 cursor-pointer hover:bg-white/20 hover:border-white/40 active:scale-95 transition-all md:whitespace-nowrap"
             style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: "0.08em" }}
           >
             Rejoindre la communauté

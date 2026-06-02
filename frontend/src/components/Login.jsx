@@ -32,7 +32,7 @@ export default function Login({ onSwitchToRegister, onGoHome }) {
         <div className="flex flex-col items-center gap-1">
           <button
             onClick={onGoHome}
-            className="text-3xl md:text-4xl font-black tracking-widest text-center bg-gradient-to-r from-violet-600 to-pink-500 bg-clip-text text-transparent"
+            className="text-3xl md:text-4xl font-black tracking-widest text-center bg-gradient-to-r from-violet-600 to-pink-500 bg-clip-text text-transparent cursor-pointer hover:opacity-80 transition-opacity"
             style={{ fontFamily: "'Orbitron', sans-serif" }}
           >
             GAMEVIBE
@@ -48,7 +48,7 @@ export default function Login({ onSwitchToRegister, onGoHome }) {
 
         {/* Bouton */}
         <button
-          className="w-full py-3 md:py-4 rounded-xl font-bold tracking-widest text-sm text-white uppercase bg-gradient-to-r from-violet-600 to-pink-500 hover:opacity-90 active:scale-95 transition-all"
+          className="w-full py-3 md:py-4 rounded-xl font-bold tracking-widest text-sm text-white uppercase bg-gradient-to-r from-violet-600 to-pink-500 cursor-pointer hover:opacity-90 hover:shadow-lg hover:shadow-violet-500/50 active:scale-95 transition-all"
           style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: "0.12em" }}
         >
           Se connecter
@@ -57,7 +57,7 @@ export default function Login({ onSwitchToRegister, onGoHome }) {
         {/* Lien */}
         <p className="text-center text-sm text-gray-400">
           Pas encore de compte ?{" "}
-          <button onClick={onSwitchToRegister} className="font-semibold text-violet-400 hover:underline">
+          <button onClick={onSwitchToRegister} className="font-semibold text-violet-400 cursor-pointer hover:underline hover:text-violet-300 transition-colors">
             S&apos;inscrire
           </button>
         </p>
