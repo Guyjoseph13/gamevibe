@@ -1,0 +1,182 @@
+import { useState, useEffect } from "react";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import api from "../../services/api";
+
+function Modal({ title, onClose, children }) {
+  return (
+    <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-2 sm:p-4">
+      <div className="bg-[#1A1A2E] rounded-xl border border-violet-500/20 w-full max-w-md max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-white/5 sticky top-0 bg-[#1A1A2E] z-10">
+          <h2 className="font-bold text-white text-sm sm:text-base line-clamp-1" style={{ fontFamily: "'Orbitron', sans-serif" }}>{title}</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-white text-lg sm:text-xl cursor-pointer flex-shrink-0 ml-2 min-h-[36px] min-w-[36px] flex items-center justify-center"><i className="bi bi-x-lg"></i></button>
+        </div>
+        <div className="p-4 sm:p-6">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+export default function AdminPlateformes() {
+  const [plateformes, setPlateformes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [modal, setModal] = useState(null);
+  const [nom, setNom] = useState("");
+  const [editId, setEditId] = useState(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => { fetchPlateformes(); }, []);
+
+  const fetchPlateformes = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get("/plateformes");
+      setPlateformes(res.data.data ?? []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openAdd = () => {
+    setNom(""); setEditId(null); setError(""); setModal("add");
+  };
+
+  const openEdit = (p) => {
+    setNom(p.nom); setEditId(p.id); setError(""); setModal("edit");
+  };
+
+  const handleSubmit = async () => {
+    if (!nom.trim()) { setError("Le nom est obligatoire."); return; }
+    try {
+      if (modal === "add") {
+        await api.post("/plateformes", { nom });
+      } else {
+        await api.put(`/plateformes/${editId}`, { nom });
+      }
+      setModal(null);
+      fetchPlateformes();
+    } catch (err) {
+      setError(err.response?.data?.message || "Une erreur est survenue.");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm("Supprimer cette plateforme ?")) return;
+    try {
+      await api.delete(`/plateformes/${id}`);
+      fetchPlateformes();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return (
+    <div>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl font-black text-white line-clamp-1" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+            Gestion des plateformes
+          </h1>
+          <p className="text-gray-500 text-xs sm:text-sm mt-1 line-clamp-1">Ajouter, modifier ou supprimer</p>
+        </div>
+        <button
+          onClick={openAdd}
+          className="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-violet-600 to-pink-500 hover:opacity-90 cursor-pointer flex items-center gap-2 min-h-[40px] whitespace-nowrap"
+          style={{ fontFamily: "'Orbitron', sans-serif" }}
+        >
+          <i className="bi bi-plus-lg"></i>
+          <span className="hidden sm:inline">Ajouter</span>
+        </button>
+      </div>
+
+      {/* Table */}
+      <div className="bg-[#1A1A2E] rounded-xl border border-white/5 overflow-x-auto">
+        {loading ? (
+          <div className="p-6 text-gray-500 text-sm">Chargement...</div>
+        ) : (
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-white/5">
+                <th className="text-left px-4 py-3 text-xs text-gray-500 tracking-widest uppercase">NOM</th>
+                <th className="text-left px-4 py-3 text-xs text-gray-500 tracking-widest uppercase">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {plateformes.length === 0 ? (
+                <tr>
+                  <td colSpan={2} className="px-4 py-6 text-center text-gray-500 text-sm">
+                    Aucune plateforme trouvée
+                  </td>
+                </tr>
+              ) : (
+                plateformes.map((p) => (
+                  <tr key={p.id} className="border-b border-white/3 hover:bg-white/2 transition-colors">
+                    <td className="px-4 py-3 text-sm font-semibold text-white">
+                      <span className="px-3 py-1 rounded-lg bg-violet-500/15 text-violet-400">{p.nom}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => openEdit(p)}
+                          className="text-xs px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-400 hover:bg-violet-500/25 cursor-pointer transition-colors"
+                        >
+                          Modifier
+                        </button>
+                        <button
+                          onClick={() => handleDelete(p.id)}
+                          className="text-xs px-3 py-1.5 rounded-lg bg-red-500/15 text-red-400 hover:bg-red-500/25 cursor-pointer transition-colors"
+                        >
+                          Supprimer
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {/* Modal */}
+      {modal && (
+        <Modal title={modal === "add" ? "Ajouter une plateforme" : "Modifier la plateforme"} onClose={() => setModal(null)}>
+          <div className="flex flex-col gap-4">
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-gray-400 uppercase tracking-widest">Nom</label>
+              <input
+                type="text"
+                value={nom}
+                onChange={(e) => setNom(e.target.value)}
+                placeholder="Ex: PlayStation 5"
+                className="bg-[#0F0F1A] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white outline-none focus:border-violet-500/50"
+              />
+            </div>
+            <div className="flex gap-3 mt-2">
+              <button
+                onClick={handleSubmit}
+                className="flex-1 py-2.5 rounded-lg text-sm font-bold text-white bg-gradient-to-r from-violet-600 to-pink-500 hover:opacity-90 cursor-pointer"
+                style={{ fontFamily: "'Orbitron', sans-serif" }}
+              >
+                {modal === "add" ? "Ajouter" : "Modifier"}
+              </button>
+              <button
+                onClick={() => setModal(null)}
+                className="px-4 py-2.5 rounded-lg text-sm font-bold text-gray-400 border border-white/10 hover:bg-white/5 cursor-pointer"
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}

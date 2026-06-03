@@ -6,12 +6,7 @@ const STATS = [
   { target: 8500, label: "Avis" },
   { target: 3200, label: "Joueurs" },
 ];
-/* // Plus tard — données de l'API
-const STATS = [
-  { target: data.totalJeux, label: "Jeux" },
-  { target: data.totalAvis, label: "Avis" },
-  { target: data.totalJoueurs, label: "Joueurs" },
-]; */
+
 function AnimatedStat({ target, label, delay }) {
   const count = useCountUp(target, 2200, delay);
   const formatted = count.toLocaleString("fr-FR").replace(/\u202f/g, "\u00a0");
@@ -31,7 +26,7 @@ function AnimatedStat({ target, label, delay }) {
   );
 }
 
-export default function Home({ onGoToLogin, onGoToRegister }) {
+export default function Home({ onGoToLogin, onGoToRegister, onLogout, user }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -68,39 +63,63 @@ export default function Home({ onGoToLogin, onGoToRegister }) {
         </div>
 
         {/* Boutons desktop */}
-        <div className="hidden md:flex items-center gap-3">
-          <button
-            onClick={onGoToLogin}
-            className="px-5 py-2 rounded-lg text-sm font-semibold text-violet-400 border border-violet-600 cursor-pointer hover:bg-violet-400/10 hover:border-violet-500 transition-colors"
-            style={{ fontFamily: "'Orbitron', sans-serif" }}
-          >
-            Connexion
-          </button>
-          <button
-            onClick={onGoToRegister}
-            className="px-5 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-violet-600 to-pink-500 cursor-pointer hover:opacity-90 hover:shadow-lg hover:shadow-violet-500/50 transition-opacity"
-            style={{ fontFamily: "'Orbitron', sans-serif" }}
-          >
-            S&apos;inscrire
-          </button>
+        <div className="hidden md:flex items-center gap-4">
+          {user ? (
+            <button
+              onClick={onLogout}
+              className="px-5 py-2 rounded-lg text-sm font-semibold text-red-400 border border-red-500 cursor-pointer hover:bg-red-400/10 transition-colors"
+              style={{ fontFamily: "'Orbitron', sans-serif" }}
+            >
+              Déconnexion
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={onGoToLogin}
+                className="px-5 py-2 rounded-lg text-sm font-semibold text-violet-400 border border-violet-600 cursor-pointer hover:bg-violet-400/10 hover:border-violet-500 transition-colors"
+                style={{ fontFamily: "'Orbitron', sans-serif" }}
+              >
+                Connexion
+              </button>
+              <button
+                onClick={onGoToRegister}
+                className="px-5 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-violet-600 to-pink-500 cursor-pointer hover:opacity-90 hover:shadow-lg hover:shadow-violet-500/50 transition-opacity"
+                style={{ fontFamily: "'Orbitron', sans-serif" }}
+              >
+                S&apos;inscrire
+              </button>
+            </>
+          )}
         </div>
 
         {/* Boutons + burger mobile */}
         <div className="flex md:hidden items-center gap-2">
-          <button
-            onClick={onGoToLogin}
-            className="px-3 py-1.5 rounded-lg text-xs font-semibold text-violet-400 border border-violet-600 cursor-pointer hover:bg-violet-400/10 transition-colors"
-            style={{ fontFamily: "'Orbitron', sans-serif" }}
-          >
-            Connexion
-          </button>
-          <button
-            onClick={onGoToRegister}
-            className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-violet-600 to-pink-500 cursor-pointer hover:opacity-90 transition-opacity"
-            style={{ fontFamily: "'Orbitron', sans-serif" }}
-          >
-            S&apos;inscrire
-          </button>
+          {user ? (
+            <button
+              onClick={onLogout}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-red-400 border border-red-500 cursor-pointer hover:bg-red-400/10 transition-colors"
+              style={{ fontFamily: "'Orbitron', sans-serif" }}
+            >
+              Déconnexion
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={onGoToLogin}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-violet-400 border border-violet-600 cursor-pointer hover:bg-violet-400/10 transition-colors"
+                style={{ fontFamily: "'Orbitron', sans-serif" }}
+              >
+                Connexion
+              </button>
+              <button
+                onClick={onGoToRegister}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-violet-600 to-pink-500 cursor-pointer hover:opacity-90 transition-opacity"
+                style={{ fontFamily: "'Orbitron', sans-serif" }}
+              >
+                S&apos;inscrire
+              </button>
+            </>
+          )}
           <button onClick={() => setMenuOpen(!menuOpen)} className="ml-1 flex flex-col gap-1 p-1 cursor-pointer">
             <span className={`block w-5 h-0.5 bg-white transition-all ${menuOpen ? "rotate-45 translate-y-1.5" : ""}`} />
             <span className={`block w-5 h-0.5 bg-white transition-all ${menuOpen ? "opacity-0" : ""}`} />
@@ -123,6 +142,12 @@ export default function Home({ onGoToLogin, onGoToRegister }) {
 
       {/* ── HERO ── */}
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-5 md:px-6 gap-6 md:gap-8 py-12 md:py-0">
+
+        {user && (
+          <div className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-violet-500/20 to-pink-500/20 border border-violet-500/30">
+            <span className="text-sm sm:text-base font-semibold text-white" style={{ fontFamily: "'Orbitron', sans-serif" }}>Bienvenue {user.nom} !</span>
+          </div>
+        )}
 
         {/* Badge */}
         <div
@@ -158,13 +183,15 @@ export default function Home({ onGoToLogin, onGoToRegister }) {
           >
             Explorer le catalogue
           </button>
-          <button
-            onClick={onGoToRegister}
-            className="flex-1 md:flex-none md:w-auto md:min-w-[220px] md:max-w-[360px] py-3 md:px-6 md:py-4 rounded-xl text-xs md:text-sm font-bold tracking-widest text-white uppercase border border-white/20 bg-white/5 cursor-pointer hover:bg-white/20 hover:border-white/40 active:scale-95 transition-all md:whitespace-nowrap"
-            style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: "0.08em" }}
-          >
-            Rejoindre la communauté
-          </button>
+          {!user && (
+            <button
+              onClick={onGoToRegister}
+              className="flex-1 md:flex-none md:w-auto md:min-w-[220px] md:max-w-[360px] py-3 md:px-6 md:py-4 rounded-xl text-xs md:text-sm font-bold tracking-widest text-white uppercase border border-white/20 bg-white/5 cursor-pointer hover:bg-white/20 hover:border-white/40 active:scale-95 transition-all md:whitespace-nowrap"
+              style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: "0.08em" }}
+            >
+              Rejoindre la communauté
+            </button>
+          )}
         </div>
 
         {/* Stats animées */}
@@ -177,3 +204,9 @@ export default function Home({ onGoToLogin, onGoToRegister }) {
     </div>
   );
 }
+/* // Plus tard — données de l'API
+const STATS = [
+  { target: data.totalJeux, label: "Jeux" },
+  { target: data.totalAvis, label: "Avis" },
+  { target: data.totalJoueurs, label: "Joueurs" },
+]; */

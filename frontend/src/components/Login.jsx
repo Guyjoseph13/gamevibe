@@ -1,6 +1,7 @@
 import { useState } from "react";
+import api from "../services/api";
 
-function InputField({ label, type = "text", placeholder, value, onChange }) {
+function InputField({ label, type = "text", placeholder, value, onChange, error }) {
   return (
     <div className="flex flex-col gap-1">
       <label
@@ -14,15 +15,75 @@ function InputField({ label, type = "text", placeholder, value, onChange }) {
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className="w-full rounded-lg px-4 py-3 text-sm text-gray-200 outline-none transition-all duration-200 placeholder-gray-500 bg-white/5 border border-white/10 focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/15"
+        className={`w-full rounded-lg px-4 py-3 text-sm text-gray-200 outline-none transition-all duration-200 placeholder-gray-500 bg-white/5 border focus:ring-2 ${
+          error
+            ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/15"
+            : "border-white/10 focus:border-violet-500/50 focus:ring-violet-500/15"
+        }`}
       />
+      {error && <span className="text-xs text-red-400 font-medium">{error}</span>}
     </div>
   );
 }
 
-export default function Login({ onSwitchToRegister, onGoHome }) {
-  const [form, setForm] = useState({ email: "", password: "" });
-  const handle = (field) => (e) => setForm({ ...form, [field]: e.target.value });
+export default function Login({ onSwitchToRegister, onGoHome, onLoginSuccess }) {
+  const [form, setForm] = useState({ email: "", mot_de_passe: "" });
+  const [errors, setErrors] = useState({});
+  const [globalError, setGlobalError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handle = (field) => (e) => {
+    setForm({ ...form, [field]: e.target.value });
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: "" });
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!form.email) {
+      newErrors.email = "L'email est requis.";
+    } else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+      newErrors.email = "Format d'email invalide.";
+    }
+
+    if (!form.mot_de_passe) {
+      newErrors.mot_de_passe = "Le mot de passe est requis.";
+    } else if (form.mot_de_passe.length < 6) {
+      newErrors.mot_de_passe = "Le mot de passe doit avoir au moins 6 caractères.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    setGlobalError("");
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await api.post("/login", {
+        email: form.email,
+        mot_de_passe: form.mot_de_passe,
+      });
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      onLoginSuccess(res.data.user);
+    } catch (err) {
+      setGlobalError(
+        err.response?.data?.message || "Une erreur est survenue. Veuillez réessayer."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-full px-4 flex items-center justify-center min-h-screen bg-[#0d0d1a]">
@@ -40,18 +101,42 @@ export default function Login({ onSwitchToRegister, onGoHome }) {
           <p className="text-sm text-gray-400 mt-1">Connectez-vous à votre compte</p>
         </div>
 
+        {/* Erreur globale */}
+        {globalError && (
+          <div className="flex items-start gap-3 bg-red-500/15 border border-red-500/40 text-red-300 text-sm px-4 py-3 rounded-lg">
+            <span className="text-lg mt-0.5">⚠️</span>
+            <span>{globalError}</span>
+          </div>
+        )}
+
         {/* Champs */}
         <div className="flex flex-col gap-4">
-          <InputField label="Email" type="email" placeholder="votre@email.com" value={form.email} onChange={handle("email")} />
-          <InputField label="Mot de passe" type="password" placeholder="••••••••" value={form.password} onChange={handle("password")} />
+          <InputField
+            label="Email"
+            type="email"
+            placeholder="votre@email.com"
+            value={form.email}
+            onChange={handle("email")}
+            error={errors.email}
+          />
+          <InputField
+            label="Mot de passe"
+            type="password"
+            placeholder="••••••••"
+            value={form.mot_de_passe}
+            onChange={handle("mot_de_passe")}
+            error={errors.mot_de_passe}
+          />
         </div>
 
         {/* Bouton */}
         <button
-          className="w-full py-3 md:py-4 rounded-xl font-bold tracking-widest text-sm text-white uppercase bg-gradient-to-r from-violet-600 to-pink-500 cursor-pointer hover:opacity-90 hover:shadow-lg hover:shadow-violet-500/50 active:scale-95 transition-all"
+          onClick={handleSubmit}
+          disabled={loading}
+          className="w-full py-3 md:py-4 rounded-xl font-bold tracking-widest text-sm text-white uppercase bg-gradient-to-r from-violet-600 to-pink-500 cursor-pointer hover:opacity-90 hover:shadow-lg hover:shadow-violet-500/50 active:scale-95 transition-all disabled:opacity-50"
           style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: "0.12em" }}
         >
-          Se connecter
+          {loading ? "Chargement..." : "Se connecter"}
         </button>
 
         {/* Lien */}
