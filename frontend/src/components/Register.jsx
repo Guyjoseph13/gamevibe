@@ -1,7 +1,7 @@
 import { useState } from "react";
 import api from "../services/api";
 
-function InputField({ label, type = "text", placeholder, value, onChange, error }) {
+function InputField({ label, type = "text", placeholder, value, onChange, error, showToggle, showValue, onToggle }) {
   return (
     <div className="flex flex-col gap-1">
       <label
@@ -10,17 +10,29 @@ function InputField({ label, type = "text", placeholder, value, onChange, error 
       >
         {label}
       </label>
-      <input
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        className={`w-full rounded-lg px-4 py-3 text-sm text-gray-200 outline-none transition-all duration-200 placeholder-gray-500 bg-white/5 border focus:ring-2 ${
-          error
-            ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/15"
-            : "border-white/10 focus:border-violet-500/50 focus:ring-violet-500/15"
-        }`}
-      />
+      <div className="relative">
+        <input
+          type={type}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          className={`w-full rounded-lg px-4 py-3 text-sm text-gray-200 outline-none transition-all duration-200 placeholder-gray-500 bg-white/5 border focus:ring-2 ${
+            error
+              ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/15"
+              : "border-white/10 focus:border-violet-500/50 focus:ring-violet-500/15"
+          } ${showToggle ? "pr-12" : ""}`}
+        />
+        {showToggle && (
+          <button
+            type="button"
+            onClick={onToggle}
+            className="absolute inset-y-0 right-3 flex items-center text-gray-900 "
+            aria-label={showValue ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+          >
+            <i className={showValue ? "bi bi-eye-slash" : "bi bi-eye"} aria-hidden="true" />
+          </button>
+        )}
+      </div>
       {error && <span className="text-xs text-red-400 font-medium">{error}</span>}
     </div>
   );
@@ -30,6 +42,8 @@ export default function Register({ onSwitchToLogin, onGoHome, onLoginSuccess }) 
   const [form, setForm] = useState({ nom: "", email: "", mot_de_passe: "", confirm: "" });
   const [errors, setErrors] = useState({});
   const [globalError, setGlobalError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handle = (field) => (e) => {
@@ -142,19 +156,25 @@ export default function Register({ onSwitchToLogin, onGoHome, onLoginSuccess }) 
           />
           <InputField
             label="Mot de passe"
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="••••••••"
             value={form.mot_de_passe}
             onChange={handle("mot_de_passe")}
             error={errors.mot_de_passe}
+            showToggle
+            showValue={showPassword}
+            onToggle={() => setShowPassword((prev) => !prev)}
           />
           <InputField
             label="Confirmer mot de passe"
-            type="password"
+            type={showConfirmPassword ? "text" : "password"}
             placeholder="••••••••"
             value={form.confirm}
             onChange={handle("confirm")}
             error={errors.confirm}
+            showToggle
+            showValue={showConfirmPassword}
+            onToggle={() => setShowConfirmPassword((prev) => !prev)}
           />
         </div>
 
