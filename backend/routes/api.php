@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AvisController;
 use App\Http\Controllers\Api\CategorieController;
 use App\Http\Controllers\Api\PlateformeController;
 use App\Http\Controllers\Api\DeveloppeurController;
+use App\Http\Controllers\Api\AdminStatsController;
 use App\Http\Controllers\Api\UserController;
 
 // ===== ROUTES PUBLIQUES =====
@@ -73,5 +74,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/users', [UserController::class, 'index']);
         Route::get('/users/{user}', [UserController::class, 'show']);
         Route::delete('/users/{user}', [UserController::class, 'destroy']);
+
+        // Statistiques globales admin
+        Route::get('/admin/stats', [AdminStatsController::class, 'index']);
     });
 });

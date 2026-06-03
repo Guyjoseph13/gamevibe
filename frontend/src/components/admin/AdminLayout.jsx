@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import AdminDashboard from "./AdminDashboard";
 import AdminJeux from "./AdminJeux";
@@ -21,6 +21,22 @@ const MENU = [
 export default function AdminLayout({ user, onLogout }) {
   const [activePage, setActivePage] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const hash = window.location.hash.replace(/^#/, "");
+    if (hash.startsWith("admin/")) {
+      const page = hash.split("/")[1];
+      if (MENU.some((item) => item.key === page)) {
+        setActivePage(page);
+        return;
+      }
+    }
+
+    const savedPage = localStorage.getItem("adminActivePage");
+    if (savedPage && MENU.some((item) => item.key === savedPage)) {
+      setActivePage(savedPage);
+    }
+  }, []);
 
   const renderPage = () => {
     switch (activePage) {
@@ -70,7 +86,12 @@ export default function AdminLayout({ user, onLogout }) {
           {MENU.map((item) => (
             <button
               key={item.key}
-              onClick={() => { setActivePage(item.key); setSidebarOpen(false); }}
+              onClick={() => {
+                setActivePage(item.key);
+                localStorage.setItem("adminActivePage", item.key);
+                window.history.pushState({ view: "admin" }, "GameVibe", `#admin/${item.key}`);
+                setSidebarOpen(false);
+              }}
               className={`
                 flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium
                 transition-all cursor-pointer text-left w-full min-h-[40px] sm:min-h-auto

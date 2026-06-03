@@ -10,15 +10,24 @@ export default function App() {
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
+    const hashView = window.location.hash.replace(/^#/, "");
+    const allowedViews = ["home", "login", "register", "admin"];
+    const initialView = allowedViews.includes(hashView) ? hashView : "home";
+
     if (savedUser) {
       const parsedUser = JSON.parse(savedUser);
       setUser(parsedUser);
-      // Si admin → rediriger vers l'espace admin
-      if (parsedUser.role === "admin") {
+      if (initialView === "home" && parsedUser.role === "admin") {
         setView("admin");
+      } else {
+        setView(initialView);
       }
+    } else {
+      setView(initialView);
     }
-    window.history.replaceState({ view: "home" }, "GameVibe", window.location.href);
+
+    const targetHash = hashView.startsWith("admin") ? `#${hashView}` : `#${initialView}`;
+    window.history.replaceState({ view: initialView }, "GameVibe", targetHash);
   }, []);
 
   useEffect(() => {
@@ -33,7 +42,8 @@ export default function App() {
 
   const navigateTo = (newView) => {
     setView(newView);
-    window.history.pushState({ view: newView }, "GameVibe", window.location.href);
+    const hash = newView === "admin" ? "#admin" : `#${newView}`;
+    window.history.pushState({ view: newView }, "GameVibe", hash);
   };
 
   const handleLoginSuccess = (userData) => {

@@ -28,7 +28,7 @@ class JeuController extends Controller
                     $q->where('categories.id', request('categorie_id'));
                 });
             })
-            ->paginate(12);
+            ->paginate(request('per_page', 12));
 
         return new JeuCollection($jeux);
     }

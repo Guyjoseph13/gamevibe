@@ -5,16 +5,38 @@ import api from "../../services/api";
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => { fetchUsers(); }, []);
 
   const fetchUsers = async () => {
     setLoading(true);
+    setError(null);
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Aucun token d'accès trouvé. Veuillez vous reconnecter en tant qu'administrateur.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await api.get("/users");
       setUsers(res.data.data || res.data || []);
     } catch (err) {
-      console.error(err);
+      console.error(err.response ?? err);
+      const serverMessage = err.response?.data?.message;
+      const status = err.response?.status;
+
+      if (status === 403) {
+        setError("Accès refusé : ce compte n'est pas reconnu comme administrateur.");
+      } else if (status === 401) {
+        setError("Non authentifié : veuillez vous reconnecter.");
+      } else if (serverMessage) {
+        setError(serverMessage);
+      } else {
+        setError("Impossible de charger les utilisateurs. Vérifiez votre connexion et vos droits admin.");
+      }
     } finally {
       setLoading(false);
     }
@@ -42,6 +64,8 @@ export default function AdminUsers() {
       <div className="bg-[#1A1A2E] rounded-xl border border-white/5 overflow-x-auto">
         {loading ? (
           <div className="p-4 sm:p-6 text-gray-500 text-sm">Chargement...</div>
+        ) : error ? (
+          <div className="p-4 sm:p-6 text-red-400 text-sm">{error}</div>
         ) : (
           <table className="w-full min-w-max">
             <thead>

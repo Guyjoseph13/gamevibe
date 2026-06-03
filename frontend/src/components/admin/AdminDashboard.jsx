@@ -27,29 +27,21 @@ export default function AdminDashboard({ onNavigate }) {
     totalUsers: 0,
     totalAvis: 0,
     totalPlateformes: 0,
+    totalCategories: 0,
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [jeux, users, plateformes, categories] = await Promise.all([
-          api.get("/jeux"),
-          api.get("/users"),
-          api.get("/plateformes"),
-          api.get("/categories"),
-        ]);
-
-        console.log("jeux", jeux.data);
-        console.log("users", users.data);
-        console.log("plateformes", plateformes.data);
-        console.log("categories", categories.data);
+        const response = await api.get("/admin/stats");
 
         setStats({
-          totalJeux: jeux.data.data?.length ?? 0,
-          totalUsers: users.data.data?.length ?? 0,
-          totalPlateformes: plateformes.data.data?.length ?? 0,
-          totalCategories: categories.data.data?.length ?? 0,
+          totalJeux: response.data.totalJeux ?? 0,
+          totalUsers: response.data.totalUsers ?? 0,
+          totalAvis: response.data.totalAvis ?? 0,
+          totalPlateformes: response.data.totalPlateformes ?? 0,
+          totalCategories: response.data.totalCategories ?? 0,
         });
       } catch (err) {
         console.error("Erreur stats dashboard", err);
@@ -77,10 +69,11 @@ export default function AdminDashboard({ onNavigate }) {
       {loading ? (
         <div className="text-gray-500 text-sm">Chargement...</div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-6 sm:mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-4 mb-6 sm:mb-8">
           <StatCard icon="bi-joystick" num={stats.totalJeux} label="Jeux" color="bg-violet-500/15" />
           <StatCard icon="bi-people-fill" num={stats.totalUsers} label="Utilisateurs" color="bg-pink-500/15" />
           <StatCard icon="bi-chat-left-fill" num={stats.totalAvis} label="Avis" color="bg-yellow-500/15" />
+          <StatCard icon="bi-tags" num={stats.totalCategories} label="Catégories" color="bg-cyan-500/15" />
           <StatCard icon="bi-pc-display" num={stats.totalPlateformes} label="Plateformes" color="bg-green-500/15" />
         </div>
       )}
