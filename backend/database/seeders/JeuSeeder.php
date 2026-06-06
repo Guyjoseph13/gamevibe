@@ -220,7 +220,7 @@ class JeuSeeder extends Seeder
                 'categories'  => ['FPS', 'Multijoueur'],
             ],
             [
-                'titre'       => 'My Hero Academia: One\'s Justice',
+                'titre'       => 'My Hero Academia: All\'s Justice',
                 'date_sortie' => '2018-10-26',
                 'developpeur' => 'Bandai Namco',
                 'image'       => 'https://image.jeuxvideo.com/medias-sm/177003/1770028215-9939-jaquette-avant.jpg',
