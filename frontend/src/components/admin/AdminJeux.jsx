@@ -58,10 +58,12 @@ export default function AdminJeux() {
   const [totalJeux, setTotalJeux] = useState(0);
   const [jeuxMeta, setJeuxMeta] = useState({ total: 0, current_page: 1, last_page: 1 });
   const [error, setError] = useState(null);
+  const [platformeFilter, setPlatformeFilter] = useState("");
+  const [categorieFilter, setCategorieFilter] = useState("");
 
   useEffect(() => {
-    fetchJeux(currentPage, search);
-  }, [currentPage, search]);
+    fetchJeux(currentPage, search, platformeFilter, categorieFilter);
+  }, [currentPage, search, platformeFilter, categorieFilter]);
 
   useEffect(() => {
     const currentPageNum = Number(currentPage) || 1;
@@ -75,13 +77,15 @@ export default function AdminJeux() {
     fetchMeta();
   }, []);
 
-  const fetchJeux = async (page = 1, query = "") => {
+  const fetchJeux = async (page = 1, query = "", plateforme = "", categorie = "") => {
     setLoadingJeux(true);
     setError(null);
 
     try {
       const params = { per_page: PAGE_SIZE, page };
       if (query) params.search = query;
+      if (plateforme) params.plateforme_id = plateforme;
+      if (categorie) params.categorie_id = categorie;
 
       const response = await api.get("/jeux", { params });
       const meta = response.data.meta ?? {};
@@ -164,7 +168,7 @@ export default function AdminJeux() {
         await api.put(`/jeux/${editId}`, form);
       }
       setModal(null);
-      fetchJeux(currentPage, search);
+      fetchJeux(currentPage, search, platformeFilter, categorieFilter);
     } catch (err) {
       console.error(err);
     }
@@ -177,7 +181,7 @@ export default function AdminJeux() {
       if (jeux.length === 1 && currentPage > 1) {
         setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
       } else {
-        fetchJeux(currentPage, search);
+        fetchJeux(currentPage, search, platformeFilter, categorieFilter);
       }
     } catch (err) {
       console.error(err);
@@ -244,18 +248,52 @@ export default function AdminJeux() {
         </button>
       </div>
 
-      <div className="relative mb-4">
-        <input
-          type="text"
-          placeholder="Rechercher..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setCurrentPage(1);
-          }}
-          className="w-full bg-[#1A1A2E] border border-white/10 rounded-lg px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-white outline-none focus:border-violet-500/50 pr-10"
-        />
-        <i className="bi bi-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+      <div className="flex flex-col gap-3 mb-4">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Rechercher..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full bg-[#1A1A2E] border border-white/10 rounded-lg px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-white outline-none focus:border-violet-500/50 pr-10"
+          />
+          <i className="bi bi-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <select
+            value={platformeFilter}
+            onChange={(e) => {
+              setPlatformeFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="bg-[#1A1A2E] border border-white/10 rounded-lg px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-white outline-none focus:border-violet-500/50"
+          >
+            <option value="">Filtrer par plateforme...</option>
+            {plateformes.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.nom}
+              </option>
+            ))}
+          </select>
+          <select
+            value={categorieFilter}
+            onChange={(e) => {
+              setCategorieFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="bg-[#1A1A2E] border border-white/10 rounded-lg px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-white outline-none focus:border-violet-500/50"
+          >
+            <option value="">Filtrer par catégorie...</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nom}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="bg-[#1A1A2E] rounded-xl border border-white/5 overflow-x-auto">
