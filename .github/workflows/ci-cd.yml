@@ -56,6 +56,11 @@ jobs:
       - name: Installer Railway CLI
         run: npm install -g @railway/cli
 
+      - name: Vérifier la connexion Railway
+        run: railway whoami
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
       - name: Déployer le backend
         run: railway up --service gamevibe --detach
         env:
