@@ -1,11 +1,10 @@
-name: CI/CD Gamevibe
+name: CI/CD GameVibe
 
-on: 
-    push:
-        branches: [main]
-
-    pull_request:
-        branches: [main]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   tests:
@@ -42,7 +41,6 @@ jobs:
         working-directory: backend
         run: php artisan test --coverage --min=60
 
-
   deploy:
     name: Déploiement Railway
     runs-on: ubuntu-latest
@@ -50,25 +48,18 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v4
+      - name: Déployer le backend sur Railway
+        run: |
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"query": "mutation { serviceInstanceRedeploy(environmentId: \"${{ secrets.RAILWAY_ENV_ID }}\", serviceId: \"${{ secrets.RAILWAY_BACKEND_SERVICE_ID }}\") }"}' \
+            https://backboard.railway.com/graphql/v2
 
-      - name: Installer Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Vérifier la connexion Railway
-        run: railway whoami
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-      - name: Déployer le backend
-        run: railway up --service gamevibe --detach
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
-
-      - name: Déployer le frontend
-        run: railway up --service remarkable-generosity --detach
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+      - name: Déployer le frontend sur Railway
+        run: |
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"query": "mutation { serviceInstanceRedeploy(environmentId: \"${{ secrets.RAILWAY_ENV_ID }}\", serviceId: \"${{ secrets.RAILWAY_FRONTEND_SERVICE_ID }}\") }"}' \
+            https://backboard.railway.com/graphql/v2
