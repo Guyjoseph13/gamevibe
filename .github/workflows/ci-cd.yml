@@ -1,0 +1,17 @@
+name: CI/CD Gamevibe
+
+on: 
+    push:
+        branches: [main]
+
+    pull_request:
+        branches: [main]
+
+jobs:
+  tests:
+    name: Tests PHPUnit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
