@@ -9,34 +9,30 @@ use App\Models\User;
 
 class UserController extends Controller
 {
-    // Liste tous les utilisateurs (admin) — exclut les supprimés par défaut
     public function index()
     {
         $users = User::paginate(10);
         return UserResource::collection($users);
     }
 
-    // Voir un utilisateur (admin)
     public function show(User $user)
     {
         return new UserResource($user);
     }
 
-    // Désactiver un compte (admin) — soft delete
     public function destroy(User $user)
     {
-        $user->delete(); // met deleted_at, ne supprime pas vraiment
+        $user->delete();
 
         return response()->json([
             'message' => 'Compte désactivé avec succès'
         ]);
     }
 
-    // Réactiver un compte (admin) — restore
     public function restore(int $id)
     {
         $user = User::withTrashed()->findOrFail($id);
-        $user->restore(); // remet deleted_at à null
+        $user->restore(); 
 
         return response()->json([
             'message' => 'Compte réactivé avec succès'

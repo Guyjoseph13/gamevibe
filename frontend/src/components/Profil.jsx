@@ -3,7 +3,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import api from "../services/api";
 import Navbar from "./Navbar";
 
-// ── Modal réutilisable ───────────────────────────────────────────────────────
+
 function Modal({ title, onClose, children }) {
   return (
     <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
