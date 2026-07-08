@@ -19,6 +19,8 @@ Route::get('/jeux/{jeu}',  [JeuController::class, 'show']);
 
 Route::get('/jeux/{jeu}/avis', [AvisController::class, 'index']);
 
+Route::get('/stats', [AdminController::class, 'statsPubliques']);
+
 Route::get('/categories',  [CategorieController::class, 'index']);
 Route::get('/plateformes', [PlateformeController::class, 'index']);
 Route::get('/developpeurs',[DeveloppeurController::class, 'index']);

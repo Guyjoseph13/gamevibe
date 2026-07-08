@@ -21,4 +21,13 @@ class AdminController extends Controller
             'totalPlateformes' => Plateforme::count(),
         ]);
     }
+
+    public function statsPubliques()
+{
+    return response()->json([
+        'totalJeux'  => Jeu::count(),
+        'totalAvis'  => Avis::count(),
+        'totalUsers' => User::count(),
+    ]);
+}
 }
