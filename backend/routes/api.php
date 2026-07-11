@@ -25,6 +25,10 @@ Route::get('/categories',  [CategorieController::class, 'index']);
 Route::get('/plateformes', [PlateformeController::class, 'index']);
 Route::get('/developpeurs',[DeveloppeurController::class, 'index']);
 
+Route::get('/debug-sentry', function () {
+    throw new Exception('Test Sentry - erreur volontaire pour verifier la supervision');
+});
+
 //  ROUTES PRIVÉES (connecté)
 Route::middleware('auth:sanctum')->group(function () {
 
