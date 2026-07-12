@@ -12,7 +12,7 @@ return [
         'http://127.0.0.1:3000',
         'http://127.0.0.1:5173',
         'https://remarkable-generosity-production.up.railway.app',
-        'https://frontend-production-662d.up.railway.app',
+        'https://gamevibe-production-98f7.up.railway.app',
     ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
