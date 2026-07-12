@@ -15,6 +15,9 @@ ENV CYPRESS_INSTALL_BINARY=0
 RUN npm install
 
 COPY . .
+
+# Cache buster : force la reconstruction du bundle
+RUN echo "build-2026-07-11" > /tmp/build-id
 RUN npm run build
 
 # ── STAGE 2 : Servir avec Nginx ──
