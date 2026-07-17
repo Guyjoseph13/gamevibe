@@ -11,8 +11,8 @@ use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\UserController;
 
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login',    [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
+Route::post('/login',    [AuthController::class, 'login'])->middleware('throttle:5,1');
 
 Route::get('/jeux',        [JeuController::class, 'index']);
 Route::get('/jeux/{jeu}',  [JeuController::class, 'show']);
@@ -25,7 +25,7 @@ Route::get('/categories',  [CategorieController::class, 'index']);
 Route::get('/plateformes', [PlateformeController::class, 'index']);
 Route::get('/developpeurs',[DeveloppeurController::class, 'index']);
 
-// Route de test Sentry 
+// Route de test Sentry
 // Route::get('/debug-sentry', function () {
 //     throw new Exception('Test Sentry - erreur volontaire pour verifier la supervision');
 // });
