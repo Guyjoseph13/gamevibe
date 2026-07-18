@@ -9,6 +9,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
@@ -75,6 +76,11 @@ class AuthController extends Controller
         if (!Hash::check($request->current_password, $user->password)) {
             return response()->json(['message' => 'Ancien mot de passe incorrect'], 401);
         }
+
+        // F13 : le nouveau mot de passe doit être robuste et confirmé
+        $request->validate([
+            'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
+        ]);
 
         $user->update(['password' => Hash::make($request->password)]);
 
