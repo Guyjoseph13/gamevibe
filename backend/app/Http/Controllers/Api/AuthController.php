@@ -15,18 +15,18 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         $user = User::create([
-            'name'     => $request->nom,
-            'email'    => $request->email,
+            'name' => $request->nom,
+            'email' => $request->email,
             'password' => Hash::make($request->mot_de_passe),
-            'role'     => 'user',
+            'role' => 'user',
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Inscription réussie',
-            'user'    => new UserResource($user),
-            'token'   => $token,
+            'user' => new UserResource($user),
+            'token' => $token,
         ], 201);
     }
 
@@ -42,8 +42,8 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Connexion réussie',
-            'user'    => new UserResource($user),
-            'token'   => $token,
+            'user' => new UserResource($user),
+            'token' => $token,
         ]);
     }
 
@@ -57,13 +57,13 @@ class AuthController extends Controller
     {
         $user = $request->user();
         $user->update([
-            'name'  => $request->nom   ?? $user->name,
+            'name' => $request->nom ?? $user->name,
             'email' => $request->email ?? $user->email,
         ]);
 
         return response()->json([
             'message' => 'Profil mis à jour',
-            'user'    => new UserResource($user),
+            'user' => new UserResource($user),
         ]);
     }
 
@@ -76,7 +76,9 @@ class AuthController extends Controller
         }
 
         $user->update(['password' => Hash::make($request->nouveau_mot_de_passe)]);
-        return response()->json(['message' => 'Mot de passe mis à jour']);
+        // F15 : révoque tous les jetons existants après changement de mot de passe
+        $user->tokens()->delete();
+        return response()->json(['message' => 'Mot de passe mis à jour. Veuillez vous reconnecter.']);
     }
 
     // Supprimer son propre compte (soft delete)
