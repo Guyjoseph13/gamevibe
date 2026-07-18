@@ -71,13 +71,16 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
-        if (!Hash::check($request->ancien_mot_de_passe, $user->password)) {
+        // BUG-05 : le front envoie current_password / password (et non ancien_/nouveau_)
+        if (!Hash::check($request->current_password, $user->password)) {
             return response()->json(['message' => 'Ancien mot de passe incorrect'], 401);
         }
 
-        $user->update(['password' => Hash::make($request->nouveau_mot_de_passe)]);
+        $user->update(['password' => Hash::make($request->password)]);
+
         // F15 : révoque tous les jetons existants après changement de mot de passe
         $user->tokens()->delete();
+
         return response()->json(['message' => 'Mot de passe mis à jour. Veuillez vous reconnecter.']);
     }
 
