@@ -16,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
+
+        // F4/F5 : en-têtes de sécurité sur les réponses de l'API
+        $middleware->api(append: [
+            \App\Http\Middleware\SecurityHeaders::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         Integration::handles($exceptions);
