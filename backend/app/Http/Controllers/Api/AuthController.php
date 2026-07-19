@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -31,22 +32,28 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function login(LoginRequest $request)
-    {
-        $user = User::where('email', $request->email)->first();
+   public function login(LoginRequest $request)
+{
+    $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->mot_de_passe, $user->password)) {
-            return response()->json(['message' => 'Email ou mot de passe incorrect'], 401);
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Connexion réussie',
-            'user' => new UserResource($user),
-            'token' => $token,
+    if (!$user || !Hash::check($request->mot_de_passe, $user->password)) {
+        // F16 : trace des échecs de connexion (détection de force brute)
+        Log::warning('Echec de connexion', [
+            'email' => $request->email,
+            'ip'    => $request->ip(),
         ]);
+
+        return response()->json(['message' => 'Email ou mot de passe incorrect'], 401);
     }
+
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'message' => 'Connexion réussie',
+        'user' => new UserResource($user),
+        'token' => $token,
+    ]);
+}
 
     public function logout(Request $request)
     {
