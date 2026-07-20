@@ -6,6 +6,10 @@ import Navbar from "./Navbar";
 export default function FicheJeu({ jeuId, user, onGoToLogin, onGoToRegister, onLogout, onNavigate }) {
   const [jeu, setJeu] = useState(null);
   const [avis, setAvis] = useState([]);
+  const [totalAvis, setTotalAvis] = useState(0);
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ note: 0, commentaire: "" });
   const [hoverNote, setHoverNote] = useState(0);
@@ -29,10 +33,28 @@ export default function FicheJeu({ jeuId, user, onGoToLogin, onGoToRegister, onL
       ]);
       setJeu(jeuRes.data.data);
       setAvis(avisRes.data.data ?? []);
+      setTotalAvis(avisRes.data.meta?.total ?? 0);
+      setLastPage(avisRes.data.meta?.last_page ?? 1);
+      setPage(1);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+  const handleLoadMore = async () => {
+    if (loadingMore || page >= lastPage) return;
+    setLoadingMore(true);
+    try {
+      const res = await api.get(`/jeux/${jeuId}/avis`, { params: { page: page + 1 } });
+      setAvis((prev) => [...prev, ...(res.data.data ?? [])]);
+      setPage((p) => p + 1);
+      setLastPage(res.data.meta?.last_page ?? lastPage);
+      setTotalAvis(res.data.meta?.total ?? totalAvis);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -180,7 +202,7 @@ export default function FicheJeu({ jeuId, user, onGoToLogin, onGoToRegister, onL
                 <div className="flex gap-0.5">
                   {renderStars(Math.round(jeu.note_moyenne))}
                 </div>
-                <div className="text-gray-500 text-xs mt-0.5">{avis.length} avis</div>
+                <div className="text-gray-500 text-xs mt-0.5">{totalAvis} avis</div>
               </div>
             </div>
 
@@ -236,7 +258,7 @@ export default function FicheJeu({ jeuId, user, onGoToLogin, onGoToRegister, onL
             style={{ fontFamily: "'Orbitron', sans-serif" }}
           >
             <i className="bi bi-chat-left-fill mr-2 text-violet-500"></i>
-            Avis de la communauté ({avis.length})
+            Avis de la communauté ({totalAvis})
           </h2>
 
           {/* Messages */}
@@ -325,11 +347,10 @@ export default function FicheJeu({ jeuId, user, onGoToLogin, onGoToRegister, onL
               {avis.map((a) => (
                 <div
                   key={a.id}
-                  className={`bg-[#1A1A2E] rounded-xl border p-4 ${
-                    user && a.user?.id === user.id
+                  className={`bg-[#1A1A2E] rounded-xl border p-4 ${user && a.user?.id === user.id
                       ? "border-violet-500/30"
                       : "border-white/5"
-                  }`}
+                    }`}
                 >
                   {editId === a.id ? (
                     /* Formulaire modification */
@@ -424,6 +445,15 @@ export default function FicheJeu({ jeuId, user, onGoToLogin, onGoToRegister, onL
                   )}
                 </div>
               ))}
+              {page < lastPage && (
+                <button
+                  onClick={handleLoadMore}
+                  disabled={loadingMore}
+                  className="mt-2 self-center px-5 py-2 rounded-lg border border-violet-500/40 text-violet-300 text-sm hover:bg-violet-500/10 disabled:opacity-50"
+                >
+                  {loadingMore ? "Chargement..." : `Voir plus d'avis (${avis.length}/${totalAvis})`}
+                </button>
+              )}
             </div>
           )}
         </div>
