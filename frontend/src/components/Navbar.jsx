@@ -5,7 +5,7 @@ export default function Navbar({ user, onGoToLogin, onGoToRegister, onLogout, on
   const [menuOpen, setMenuOpen] = useState(false);
 
   const NAV_LINKS = [
-    { label: "Accueil",   page: "home" },
+    { label: "Accueil", page: "home" },
     { label: "Catalogue", page: "catalogue" },
   ];
 
@@ -27,9 +27,8 @@ export default function Navbar({ user, onGoToLogin, onGoToRegister, onLogout, on
           <button
             key={item.page}
             onClick={() => onNavigate(item.page)}
-            className={`text-sm font-medium cursor-pointer transition-colors ${
-              activePage === item.page ? "text-white border-b border-white pb-0.5" : "text-gray-400 hover:text-white"
-            }`}
+            className={`text-sm font-medium cursor-pointer transition-colors ${activePage === item.page ? "text-white border-b border-white pb-0.5" : "text-gray-400 hover:text-white"
+              }`}
             style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: "0.05em" }}
           >
             {item.label}
@@ -56,11 +55,10 @@ export default function Navbar({ user, onGoToLogin, onGoToRegister, onLogout, on
             {/* Avatar → profil */}
             <button
               onClick={() => onNavigate("profil")}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
-                activePage === "profil"
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${activePage === "profil"
                   ? "text-white bg-violet-500/20 border border-violet-500/50"
                   : "text-gray-300 hover:text-white hover:bg-white/5"
-              }`}
+                }`}
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               <div className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
@@ -104,6 +102,7 @@ export default function Navbar({ user, onGoToLogin, onGoToRegister, onLogout, on
             {user.role === "admin" && (
               <button
                 onClick={() => onNavigate("admin")}
+                aria-label="Accéder au tableau de bord administrateur"
                 className="px-2 py-1.5 rounded-lg text-xs text-yellow-400 border border-yellow-500/50 cursor-pointer"
                 style={{ fontFamily: "'Orbitron', sans-serif" }}
               >
@@ -112,12 +111,14 @@ export default function Navbar({ user, onGoToLogin, onGoToRegister, onLogout, on
             )}
             <button
               onClick={() => onNavigate("profil")}
+              aria-label="Accéder à mon profil"
               className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-sm font-bold text-white cursor-pointer"
             >
               {user.nom?.charAt(0).toUpperCase()}
             </button>
             <button
               onClick={onLogout}
+              aria-label="Se déconnecter"
               className="px-3 py-1.5 rounded-lg text-xs font-semibold text-red-400 border border-red-500 cursor-pointer"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
@@ -134,7 +135,12 @@ export default function Navbar({ user, onGoToLogin, onGoToRegister, onLogout, on
             </button>
           </>
         )}
-        <button onClick={() => setMenuOpen(!menuOpen)} className="ml-1 flex flex-col gap-1 p-1 cursor-pointer">
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+          aria-expanded={menuOpen}
+          className="ml-1 flex flex-col gap-1 p-1 cursor-pointer"
+        >
           <span className={`block w-5 h-0.5 bg-white transition-all ${menuOpen ? "rotate-45 translate-y-1.5" : ""}`} />
           <span className={`block w-5 h-0.5 bg-white transition-all ${menuOpen ? "opacity-0" : ""}`} />
           <span className={`block w-5 h-0.5 bg-white transition-all ${menuOpen ? "-rotate-45 -translate-y-1.5" : ""}`} />
