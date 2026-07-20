@@ -8,3 +8,5 @@ frontend/.env
 
 # Docker
 .env
+trivy-backend.txt
+trivy-frontend.txt
