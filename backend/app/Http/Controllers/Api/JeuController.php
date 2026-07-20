@@ -17,16 +17,26 @@ class JeuController extends Controller
     public function index()
     {
         $query = Jeu::with(['developpeur', 'plateformes', 'categories'])
-            ->when(request('search'), fn($q) =>
+            ->when(
+                request('search'),
+                fn($q) =>
                 $q->where('titre', 'like', '%' . request('search') . '%')
             )
-            ->when(request('plateforme_id'), fn($q) =>
-                $q->whereHas('plateformes', fn($q2) =>
+            ->when(
+                request('plateforme_id'),
+                fn($q) =>
+                $q->whereHas(
+                    'plateformes',
+                    fn($q2) =>
                     $q2->where('plateformes.uuid', request('plateforme_id'))
                 )
             )
-            ->when(request('categorie_id'), fn($q) =>
-                $q->whereHas('categories', fn($q2) =>
+            ->when(
+                request('categorie_id'),
+                fn($q) =>
+                $q->whereHas(
+                    'categories',
+                    fn($q2) =>
                     $q2->where('categories.uuid', request('categorie_id'))
                 )
             )
@@ -36,7 +46,7 @@ class JeuController extends Controller
         if (request()->boolean('all')) {
             $jeux = $query->without(['developpeur', 'plateformes', 'categories'])
                 ->get(['uuid', 'titre'])
-                ->map(fn ($jeu) => ['id' => $jeu->uuid, 'titre' => $jeu->titre]);
+                ->map(fn($jeu) => ['id' => $jeu->uuid, 'titre' => $jeu->titre]);
             return response()->json(['data' => $jeux]);
         }
 
@@ -45,7 +55,10 @@ class JeuController extends Controller
 
     public function show(Jeu $jeu)
     {
-        $jeu->load(['developpeur', 'plateformes', 'categories', 'avis.user']);
+        // PERF : les avis ne sont plus embarqués dans la fiche.
+        // Le front les récupère via /jeux/{uuid}/avis, route déjà paginée (10 par page).
+        $jeu->load(['developpeur', 'plateformes', 'categories']);
+
         return new JeuResource($jeu);
     }
 
