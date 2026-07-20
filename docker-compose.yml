@@ -41,6 +41,8 @@ services:
       dockerfile: Dockerfile
     container_name: gamevibe_backend
     restart: unless-stopped
+    ports:                     
+      - "8000:8000"
     volumes:
       - ./backend:/var/www
       - /var/www/vendor

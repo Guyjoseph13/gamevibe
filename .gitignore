@@ -8,3 +8,5 @@ frontend/.env
 
 # Docker
 .env
+# Sorties de scan (regenerables, datees)
+trivy-*.txt
