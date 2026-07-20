@@ -12,18 +12,18 @@ use App\Http\Controllers\Api\UserController;
 
 
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
-Route::post('/login',    [AuthController::class, 'login'])->middleware('throttle:5,1');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
-Route::get('/jeux',        [JeuController::class, 'index']);
-Route::get('/jeux/{jeu}',  [JeuController::class, 'show']);
+Route::get('/jeux', [JeuController::class, 'index']);
+Route::get('/jeux/{jeu}', [JeuController::class, 'show']);
 
 Route::get('/jeux/{jeu}/avis', [AvisController::class, 'index']);
 
 Route::get('/stats', [AdminController::class, 'statsPubliques']);
 
-Route::get('/categories',  [CategorieController::class, 'index']);
+Route::get('/categories', [CategorieController::class, 'index']);
 Route::get('/plateformes', [PlateformeController::class, 'index']);
-Route::get('/developpeurs',[DeveloppeurController::class, 'index']);
+Route::get('/developpeurs', [DeveloppeurController::class, 'index']);
 
 // Route de test Sentry
 // Route::get('/debug-sentry', function () {
@@ -33,17 +33,17 @@ Route::get('/developpeurs',[DeveloppeurController::class, 'index']);
 //  ROUTES PRIVÉES (connecté)
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::post('/logout',          [AuthController::class, 'logout']);
-    Route::put('/profile',          [AuthController::class, 'updateProfile']);
-    Route::put('/password',         [AuthController::class, 'updatePassword']);
-    Route::delete('/account',       [AuthController::class, 'deleteAccount']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::put('/profile', [AuthController::class, 'updateProfile']);
+    Route::put('/password', [AuthController::class, 'updatePassword']);
+    Route::delete('/account', [AuthController::class, 'deleteAccount']);
 
-    Route::get('/mes-avis',  [UserController::class, 'mesAvis']);
+    Route::get('/mes-avis', [UserController::class, 'mesAvis']);
     Route::get('/mes-stats', [UserController::class, 'mesStats']);
 
-    Route::post('/jeux/{jeu}/avis',          [AvisController::class, 'store']);
-    Route::put('/jeux/{jeu}/avis/{avis}',    [AvisController::class, 'update']);
-    Route::delete('/jeux/{jeu}/avis/{avis}', [AvisController::class, 'destroy']);
+    Route::post('/jeux/{jeu}/avis', [AvisController::class, 'store']);
+    Route::put('/jeux/{jeu}/avis/{avis}', [AvisController::class, 'update'])->scopeBindings();
+    Route::delete('/jeux/{jeu}/avis/{avis}', [AvisController::class, 'destroy'])->scopeBindings();
 
     // ROUTES ADMIN
     Route::middleware('admin')->group(function () {
@@ -52,26 +52,26 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/avis', [AvisController::class, 'indexAdmin']);
 
-        Route::post('/jeux',         [JeuController::class, 'store']);
-        Route::put('/jeux/{jeu}',    [JeuController::class, 'update']);
+        Route::post('/jeux', [JeuController::class, 'store']);
+        Route::put('/jeux/{jeu}', [JeuController::class, 'update']);
         Route::delete('/jeux/{jeu}', [JeuController::class, 'destroy']);
 
-        Route::post('/categories',               [CategorieController::class, 'store']);
-        Route::put('/categories/{categorie}',     [CategorieController::class, 'update']);
-        Route::delete('/categories/{categorie}',  [CategorieController::class, 'destroy']);
+        Route::post('/categories', [CategorieController::class, 'store']);
+        Route::put('/categories/{categorie}', [CategorieController::class, 'update']);
+        Route::delete('/categories/{categorie}', [CategorieController::class, 'destroy']);
 
-        Route::post('/plateformes',                [PlateformeController::class, 'store']);
-        Route::put('/plateformes/{plateforme}',    [PlateformeController::class, 'update']);
+        Route::post('/plateformes', [PlateformeController::class, 'store']);
+        Route::put('/plateformes/{plateforme}', [PlateformeController::class, 'update']);
         Route::delete('/plateformes/{plateforme}', [PlateformeController::class, 'destroy']);
 
-        Route::post('/developpeurs',                 [DeveloppeurController::class, 'store']);
-        Route::put('/developpeurs/{developpeur}',     [DeveloppeurController::class, 'update']);
-        Route::delete('/developpeurs/{developpeur}',  [DeveloppeurController::class, 'destroy']);
+        Route::post('/developpeurs', [DeveloppeurController::class, 'store']);
+        Route::put('/developpeurs/{developpeur}', [DeveloppeurController::class, 'update']);
+        Route::delete('/developpeurs/{developpeur}', [DeveloppeurController::class, 'destroy']);
 
-        Route::get('/users',                 [UserController::class, 'index']);
+        Route::get('/users', [UserController::class, 'index']);
         Route::get('/users/avec-desactives', [UserController::class, 'indexAvecDesactives']);
-        Route::get('/users/{user}',          [UserController::class, 'show']);
-        Route::delete('/users/{user}',       [UserController::class, 'destroy']);
+        Route::get('/users/{user}', [UserController::class, 'show']);
+        Route::delete('/users/{user}', [UserController::class, 'destroy']);
         Route::post('/users/{uuid}/restore', [UserController::class, 'restore']);
     });
 });
