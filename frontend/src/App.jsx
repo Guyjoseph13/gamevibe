@@ -11,7 +11,11 @@ export default function App() {
   const [view, setView] = useState(() => localStorage.getItem("currentView") || "home");
   const [user, setUser] = useState(null);
   const [selectedJeuId, setSelectedJeuId] = useState(() => {
-    return localStorage.getItem("selectedJeuId") || null;
+    const saved = localStorage.getItem("selectedJeuId");
+    if (!saved || saved === "null" || saved === "undefined") {
+      return null;
+    }
+    return saved;
   });
 
   useEffect(() => {
@@ -61,29 +65,29 @@ export default function App() {
 
   const commonProps = {
     user,
-    onGoToLogin:    () => navigateTo("login"),
+    onGoToLogin: () => navigateTo("login"),
     onGoToRegister: () => navigateTo("register"),
-    onLogout:       handleLogout,
-    onNavigate:     navigateTo,
+    onLogout: handleLogout,
+    onNavigate: navigateTo,
   };
 
   return (
     <>
-      {view === "home"      && <Home      {...commonProps} />}
+      {view === "home" && <Home      {...commonProps} />}
       {view === "catalogue" && <Catalogue {...commonProps} onSelectJeu={(id) => { setSelectedJeuId(id); localStorage.setItem("selectedJeuId", id); navigateTo("fiche-jeu"); }} />}
       {view === "fiche-jeu" && <FicheJeu  {...commonProps} jeuId={selectedJeuId} />}
-      {view === "profil"    && <Profil    {...commonProps} onUpdateUser={handleUpdateUser} />}
-      {view === "login"     && (
+      {view === "profil" && <Profil    {...commonProps} onUpdateUser={handleUpdateUser} />}
+      {view === "login" && (
         <div className="min-h-screen flex items-center justify-center" style={{ background: "#0d0d1a" }}>
           <Login onSwitchToRegister={() => navigateTo("register")} onGoHome={() => navigateTo("home")} onLoginSuccess={handleLoginSuccess} />
         </div>
       )}
-      {view === "register"  && (
+      {view === "register" && (
         <div className="min-h-screen flex items-center justify-center" style={{ background: "#0d0d1a" }}>
           <Register onSwitchToLogin={() => navigateTo("login")} onGoHome={() => navigateTo("home")} onLoginSuccess={handleLoginSuccess} />
         </div>
       )}
-      {view === "admin"     && <AdminLayout user={user} onLogout={handleLogout} onNavigate={navigateTo} />}
+      {view === "admin" && <AdminLayout user={user} onLogout={handleLogout} onNavigate={navigateTo} />}
     </>
   );
 }

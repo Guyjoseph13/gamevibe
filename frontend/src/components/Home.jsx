@@ -15,7 +15,7 @@ function AnimatedStat({ target, label, delay }) {
       >
         {formatted}
       </span>
-      <span className="text-xs text-gray-400 tracking-widest uppercase" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+      <span className="text-xs text-gray-300 tracking-widest uppercase" style={{ fontFamily: "'Orbitron', sans-serif" }}>
         {label}
       </span>
     </div>
@@ -23,7 +23,6 @@ function AnimatedStat({ target, label, delay }) {
 }
 
 export default function Home({ onGoToLogin, onGoToRegister, onLogout, user, onNavigate }) {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [stats, setStats] = useState({ totalJeux: 0, totalAvis: 0, totalUsers: 0 });
 
   useEffect(() => {
@@ -50,9 +49,6 @@ export default function Home({ onGoToLogin, onGoToRegister, onLogout, user, onNa
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0d0d1a]">
-
-      {/* Fond radial */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_60%_50%_at_50%_60%,rgba(139,92,246,0.18)_0%,rgba(236,72,153,0.10)_40%,transparent_70%)]" />
 
       {/* ── NAVBAR ── */}
 
@@ -128,24 +124,6 @@ export default function Home({ onGoToLogin, onGoToRegister, onLogout, user, onNa
           </div>
         </main>
       </div>
-      ;
-
-
-      {/* Menu burger mobile */}
-      {menuOpen && (
-        <div className="relative z-10 flex flex-col items-center gap-4 py-4 md:hidden bg-[#0d0d1a]/95 border-b border-white/10">
-          {["Catalogue", "Plateformes", "Catégories"].map((item) => (
-
-            <a key={item}
-              href="#"
-              className="text-sm font-medium text-gray-300 cursor-pointer hover:text-white transition-colors"
-              style={{ fontFamily: "'Orbitron', sans-serif" }}
-            >
-              {item}
-            </a>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
