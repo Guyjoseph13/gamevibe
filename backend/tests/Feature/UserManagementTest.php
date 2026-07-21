@@ -84,12 +84,13 @@ class UserManagementTest extends TestCase
 
         $response = $this->withHeader('Authorization', "Bearer $token")
             ->putJson('/api/password', [
-                'ancien_mot_de_passe' => 'ancienpassword',
-                'nouveau_mot_de_passe' => 'nouveaupassword123',
+                'current_password' => 'ancienpassword',
+                'password' => 'Nouveaupassword123!',
+                'password_confirmation' => 'Nouveaupassword123!',
             ]);
 
         $response->assertStatus(200);
-        $this->assertTrue(Hash::check('nouveaupassword123', $user->fresh()->password));
+        $this->assertTrue(Hash::check('Nouveaupassword123!', $user->fresh()->password));
     }
 
     public function test_le_changement_de_mot_de_passe_echoue_avec_ancien_mot_de_passe_incorrect(): void
@@ -100,7 +101,7 @@ class UserManagementTest extends TestCase
         $response = $this->withHeader('Authorization', "Bearer $token")
             ->putJson('/api/password', [
                 'ancien_mot_de_passe' => 'mauvaispassword',
-                'nouveau_mot_de_passe' => 'nouveaupassword123',
+                'nouveau_mot_de_passe' => 'Nouveaupassword123!',
             ]);
 
         $response->assertStatus(401);

@@ -16,8 +16,8 @@ class AuthTest extends TestCase
         $response = $this->postJson('/api/register', [
             'nom' => 'Konan',
             'email' => 'konan@gamevibe.com',
-            'mot_de_passe' => 'password123',
-            'mot_de_passe_confirmation' => 'password123',
+            'mot_de_passe' => 'Password123!',
+            'mot_de_passe_confirmation' => 'Password123!',
         ]);
 
         $response->assertStatus(201)
@@ -36,8 +36,8 @@ class AuthTest extends TestCase
         $response = $this->postJson('/api/register', [
             'nom' => 'Konan',
             'email' => 'konan@gamevibe.com',
-            'mot_de_passe' => 'password123',
-            'mot_de_passe_confirmation' => 'password123',
+            'mot_de_passe' => 'Password123!',
+            'mot_de_passe_confirmation' => 'Password123!',
         ]);
 
         $response->assertStatus(422);
@@ -45,11 +45,11 @@ class AuthTest extends TestCase
 
     public function test_l_inscription_echoue_si_mots_de_passe_ne_correspondent_pas(): void
     {
-        $response = $this->postJson('/api/register', [ 
+        $response = $this->postJson('/api/register', [
             'nom' => 'Konan',
             'email' => 'konan@gamevibe.com',
-            'mot_de_passe' => 'password123',
-            'mot_de_passe_confirmation' => 'autrepassword',
+            'mot_de_passe' => 'Password123!',
+            'mot_de_passe_confirmation' => 'DifferentPassword123!',
         ]);
 
         $response->assertStatus(422);
@@ -59,12 +59,12 @@ class AuthTest extends TestCase
     {
         $user = User::factory()->create([
             'email' => 'konan@gamevibe.com',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('Password123!'),
         ]);
 
         $response = $this->postJson('/api/login', [
             'email' => 'konan@gamevibe.com',
-            'mot_de_passe' => 'password123',
+            'mot_de_passe' => 'Password123!',
         ]);
 
         $response->assertStatus(200)
@@ -75,12 +75,12 @@ class AuthTest extends TestCase
     {
         User::factory()->create([
             'email' => 'konan@gamevibe.com',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('Password123!'),
         ]);
 
         $response = $this->postJson('/api/login', [
             'email' => 'konan@gamevibe.com',
-            'mot_de_passe' => 'mauvaispassword',
+            'mot_de_passe' => 'WrongPassword123!',
         ]);
 
         $response->assertStatus(401);
@@ -90,7 +90,7 @@ class AuthTest extends TestCase
     {
         $response = $this->postJson('/api/login', [
             'email' => 'inexistant@gamevibe.com',
-            'mot_de_passe' => 'password123',
+            'mot_de_passe' => 'Password123!',
         ]);
 
         $response->assertStatus(401);
