@@ -15,10 +15,8 @@ class AvisController extends Controller
 
     public function index(Jeu $jeu)
     {
-        if (request()->boolean('all')) {
-            $avis = $jeu->avis()->with('user')->latest()->get();
-            return response()->json(['data' => AvisResource::collection($avis)]);
-        }
+        // F8 : le paramètre ?all=true contournait la pagination sans authentification.
+        // Supprimé : la pagination est désormais systématique.
         $avis = Avis::where('jeu_id', $jeu->id)->with('user')->latest()->paginate(10);
 
         return AvisResource::collection($avis);
@@ -28,7 +26,9 @@ class AvisController extends Controller
     public function indexAdmin()
     {
         $query = Avis::with(['user', 'jeu'])
-            ->when(request('jeu_id'), fn ($q) => $q->whereHas('jeu', fn ($q2) =>
+            ->when(request('jeu_id'), fn($q) => $q->whereHas(
+                'jeu',
+                fn($q2) =>
                 $q2->where('uuid', request('jeu_id'))
             ))
             ->latest();
@@ -37,10 +37,10 @@ class AvisController extends Controller
 
         return AvisResource::collection($avis)->additional([
             'meta' => [
-                'total'          => $avis->total(),
-                'par_page'       => $avis->perPage(),
-                'page_actuelle'  => $avis->currentPage(),
-                'derniere_page'  => $avis->lastPage(),
+                'total' => $avis->total(),
+                'par_page' => $avis->perPage(),
+                'page_actuelle' => $avis->currentPage(),
+                'derniere_page' => $avis->lastPage(),
             ],
         ]);
     }
@@ -62,9 +62,9 @@ class AvisController extends Controller
             }
 
             $avis = Avis::create([
-                'user_id'     => $request->user()->id,
-                'jeu_id'      => $jeu->id,
-                'note'        => $request->note,
+                'user_id' => $request->user()->id,
+                'jeu_id' => $jeu->id,
+                'note' => $request->note,
                 'commentaire' => $request->commentaire,
             ]);
 
@@ -74,7 +74,7 @@ class AvisController extends Controller
 
             return response()->json([
                 'message' => 'Avis posté avec succès',
-                'avis'    => new AvisResource($avis->load('user'))
+                'avis' => new AvisResource($avis->load('user'))
             ], 201);
         });
     }
@@ -92,7 +92,7 @@ class AvisController extends Controller
             $jeu = Jeu::where('id', $jeu->id)->lockForUpdate()->firstOrFail();
 
             $avis->update([
-                'note'        => $request->note ?? $avis->note,
+                'note' => $request->note ?? $avis->note,
                 'commentaire' => $request->commentaire ?? $avis->commentaire,
             ]);
 
@@ -102,7 +102,7 @@ class AvisController extends Controller
 
             return response()->json([
                 'message' => 'Avis modifié avec succès',
-                'avis'    => new AvisResource($avis->load('user'))
+                'avis' => new AvisResource($avis->load('user'))
             ]);
         });
     }
