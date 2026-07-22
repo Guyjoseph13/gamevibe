@@ -44,6 +44,24 @@ jobs:
         working-directory: backend
         run: php artisan test --coverage --min=60
 
+  security-scan:
+    name: Scan de sécurité (Trivy)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Scanner le système de fichiers avec Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          severity: 'CRITICAL,HIGH'
+          format: 'table'
+          exit-code: '0'
+
   deploy:
     name: Déploiement Railway
     runs-on: ubuntu-latest
